@@ -1,6 +1,6 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
-    <div class="content" ref="contentElem">
+    <div class="content" ref="contentElem" draggable="true">
       <slot />
     </div>
   </div>
@@ -23,32 +23,69 @@ export default defineComponent({
     const viewportElem = ref(null as any)
     const state = reactive({
       x: 0,
+      dragging: false,
     })
 
-    watchEffect(() => {
-      if (viewportElem.value) {
-        viewportElem.value!.scrollLeft = state.x
+    watchEffect(
+      () => viewportElem.value && (viewportElem.value!.scrollLeft = state.x),
+    )
+
+    watchEffect(
+      () =>
+        viewportElem.value &&
+        (viewportElem.value!.style.transform = state.dragging
+          ? 'scale(1)'
+          : 'scale(0.98)'),
+    )
+
+    function scroll(deltaX: number, deltaY: number) {
+      const maxScrollLeft =
+        viewportElem.value!.scrollWidth - viewportElem.value!.clientWidth
+      const delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
+      state.x += delta
+      if (state.x < 0) {
+        state.x = 0
       }
-    })
+      if (state.x > maxScrollLeft) {
+        state.x = maxScrollLeft
+      }
+    }
+
+    function handleMouseWheel(e: MouseWheelEvent) {
+      const multiplier = getWheelMultiplierForDeltaMode(e.deltaMode)
+      scroll(e.deltaX * multiplier, e.deltaY * multiplier)
+
+      e.preventDefault()
+    }
 
     onMounted(() => {
       if (!viewportElem.value) {
         throw new Error('Cannot ger viewport ref')
       }
 
-      // viewportElem.value!.onscroll = (e: any) => console.log(e)
-      viewportElem.value!.onwheel = (e: any) => {
-        const multiplier = getWheelMultiplierForDeltaMode(e.deltaMode)
-        const maxScrollLeft =
-          viewportElem.value!.scrollWidth - viewportElem.value!.clientWidth
-        state.x += e.deltaY * multiplier
-        if (state.x < 0) {
-          state.x = 0
-        }
-        if (state.x > maxScrollLeft) {
-          state.x = maxScrollLeft
+      viewportElem.value!.onwheel = handleMouseWheel
+
+      if (!contentElem.value) {
+        throw new Error('Cannot ger content ref')
+      }
+
+      contentElem.value!.ondragstart = (e: DragEvent) => {
+        if (e.dataTransfer) {
+          e.dataTransfer.effectAllowed = 'none'
         }
         e.preventDefault()
+      }
+      contentElem.value!.onmousedown = (e: MouseEvent) => {
+        if (e.button === 0) state.dragging = true
+      }
+      contentElem.value!.onmouseup = (e: MouseEvent) => {
+        if (e.button === 0) state.dragging = false
+      }
+      viewportElem.value!.onmouseleave = (e: MouseEvent) =>
+        (state.dragging = false)
+      viewportElem.value!.onmousemove = (e: MouseEvent) => {
+        if (!state.dragging) return
+        scroll(-e.movementX, 0)
       }
     })
 
@@ -80,6 +117,8 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
   overflow-x: hidden;
   position: relative;
   width: 100%;
+  transition: all 0.2s;
+  transform: scale(0.98);
 }
 
 .scroll-viewport .content {
