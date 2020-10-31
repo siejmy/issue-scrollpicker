@@ -1,35 +1,46 @@
 <template>
-  <a :href="logo.linkUrl">
-    <img :src="imageUrl" :alt="imageAlt" />
-  </a>
+  <div class="logo-container">
+    <a :href="linkUrl">
+      <img :src="imageUrl" :alt="imageAlt" />
+    </a>
+  </div>
 </template>
 
 <script lang="ts">
 import { Logo } from '@/domain'
-import { defineComponent, PropType } from 'vue'
+import { computed, defineComponent, PropType } from 'vue'
 
 export default defineComponent({
-  name: 'HelloWorld',
   props: {
     logo: Object as PropType<Logo>,
+  },
+  setup(props) {
+    const linkUrl = computed(() => props.logo!.linkUrl)
+    const imageUrl = computed(() => props.logo!.imageUrl)
+    const imageAlt = computed(() => props.logo!.imageAlt)
+
+    return {
+      linkUrl,
+      imageUrl,
+      imageAlt,
+    }
   },
 })
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+.logo-container {
   display: inline-block;
-  margin: 0 10px;
+  height: inherit;
 }
-a {
-  color: #42b983;
+
+.logo-container a {
+  height: inherit;
+  display: inline-block;
+}
+
+.logo-container a img {
+  max-height: 100%;
+  max-width: 100%;
 }
 </style>
