@@ -4,7 +4,13 @@
       "path": ".."
     },
     {
-      "path": "../v1-vue"
+      "path": "../version-vue"
+    },
+    {
+      "path": "../version-vue/src"
+    },
+    {
+      "path": "../version-plain-js"
     }
   ],
   "settings": {
