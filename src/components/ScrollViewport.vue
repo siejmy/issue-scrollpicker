@@ -53,7 +53,7 @@ export default defineComponent({
 
     function handleMouseWheel(e: MouseWheelEvent) {
       const multiplier = getWheelMultiplierForDeltaMode(e.deltaMode)
-      scroll(e.deltaX * multiplier, e.deltaY * multiplier)
+      scroll(e.deltaX * multiplier, -e.deltaY * multiplier)
 
       e.preventDefault()
     }
