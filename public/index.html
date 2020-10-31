@@ -18,8 +18,11 @@
     <script>
       window.onload = function() {
         mountIssueScrollpicker('#app', {
-          logoImageUrl: '/demo-assets/logo.png',
-          logoLinkUrl: '/',
+          logo: {
+            imageUrl: '/demo-assets/logo.png',
+            alt: 'Logo siejmy',
+            linkUrl: '/',
+          },
           superTitle: 'E-MAGAZYN KATOLICKI',
           downloadButtonText: 'Pobierz PDF',
           issues: [

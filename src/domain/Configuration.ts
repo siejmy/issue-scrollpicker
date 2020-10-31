@@ -1,20 +1,15 @@
 import { Issue, validateIssue } from './Issue'
+import { Logo, validateLogo } from './Logo'
 
 export interface Configuration {
-  logoImageUrl: string
-  logoLinkUrl: string
+  logo: Logo
   superTitle: string
   downloadButtonText: string
   issues: Issue[]
 }
 
 export function validateConfiguration(c: Configuration) {
-  if (typeof c.logoImageUrl !== 'string') {
-    throw new TypeError('invalid logoImageUrl')
-  }
-  if (typeof c.logoLinkUrl !== 'string') {
-    throw new TypeError('invalid logoLinkUrl')
-  }
+  validateLogo(c.logo)
   if (typeof c.superTitle !== 'string') {
     throw new TypeError('invalid superTitle')
   }
