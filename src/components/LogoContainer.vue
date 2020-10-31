@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { Logo } from '@/domain/Logo'
+import { Logo } from '@/domain'
 import { defineComponent, PropType } from 'vue'
 
 export default defineComponent({
