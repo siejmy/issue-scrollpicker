@@ -6,6 +6,7 @@
         v-for="(issue, index) in issues"
         :key="index"
         :issue="issue"
+        :ref="'issueCoverElem_' + index"
       />
       <SeeMoreBlock :see-more="seeMore" />
     </div>
@@ -23,6 +24,7 @@ import Vue, {
   ref,
   VNode,
   watchEffect,
+  Ref,
 } from 'vue'
 import LogoContainer from './LogoContainer.vue'
 import IssueCover from './IssueCover.vue'
@@ -42,6 +44,20 @@ export default defineComponent({
     const logo = computed(() => props.config!.logo)
     const issues = computed(() => props.config!.issues)
     const seeMore = computed(() => props.config!.seeMore)
+
+    const coverElems: CoverElem[] = issues.value.map((issue, i) => ({
+      ref: ref(null as any),
+      refName: 'issueCoverElem_' + i,
+      startX: 0,
+      endX: 0,
+    }))
+    const coverElemsRefs = coverElems.reduce(
+      (refsMap, elem) => ({
+        ...refsMap,
+        [elem.refName]: elem.ref,
+      }),
+      {} as Record<string, Ref<any>>,
+    )
 
     const contentElem = ref(null as any)
     const viewportElem = ref(null as any)
@@ -82,14 +98,21 @@ export default defineComponent({
       e.preventDefault()
     }
 
-    onMounted(() => {
-      setTimeout(() => {
-        const children = resolveChildrenWithLoops(
-          slots.default ? slots.default() : [],
-        )
-        console.log(children)
-      }, 5)
+    function updateCoverElemsPositions() {
+      coverElems.forEach(coverElem => {
+        const startX = coverElem.ref.value?.$el.offsetLeft
+        const width = coverElem.ref.value?.$el.clientWidth
+        if (!startX || !width || width === 0) {
+          return
+        }
+        coverElem.startX = startX
+        coverElem.endX = startX + width
+      })
+      setTimeout(updateCoverElemsPositions, 50)
+    }
 
+    onMounted(() => {
+      updateCoverElemsPositions()
       if (!viewportElem.value) {
         throw new Error('Cannot ger viewport ref')
       }
@@ -127,6 +150,7 @@ export default defineComponent({
       logo,
       issues,
       seeMore,
+      ...coverElemsRefs,
     }
   },
 })
@@ -144,26 +168,11 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
   }
 }
 
-function resolveChildrenWithLoops(children: VNode[]): VNode[] {
-  const childrenResolved: VNode[] = []
-  children.forEach(child => {
-    if (
-      typeof child.type === 'symbol' &&
-      child.type.toString() === 'Symbol(Fragment)' &&
-      child.children &&
-      Array.isArray(child.children) &&
-      child.children.length
-    ) {
-      child.children.forEach(childsChild => {
-        if (isVNode(childsChild)) {
-          childrenResolved.push(childsChild)
-        }
-      })
-    } else {
-      childrenResolved.push(child)
-    }
-  })
-  return childrenResolved
+interface CoverElem {
+  ref: Ref<any>
+  refName: string
+  startX: number
+  endX: number
 }
 </script>
 
