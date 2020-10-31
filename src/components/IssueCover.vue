@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <img :src="coverImageUrl" :alt="title" />
+  <div class="issue-cover">
+    <div class="cover-shrinker">
+      <img :src="coverImageUrl" :alt="title" />
+    </div>
   </div>
 </template>
 
@@ -27,12 +29,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-div {
+.issue-cover {
   display: inline-block;
   height: inherit;
 }
 
-div img {
+.cover-shrinker {
+  height: inherit;
+  transform: scale(0.8);
+}
+
+.issue-cover img {
   max-height: 100%;
   max-width: 100%;
 }

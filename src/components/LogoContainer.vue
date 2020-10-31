@@ -1,8 +1,10 @@
 <template>
   <div class="logo-container">
-    <a :href="linkUrl">
-      <img :src="imageUrl" :alt="imageAlt" />
-    </a>
+    <div class="logo-shrinker">
+      <a :href="linkUrl">
+        <img :src="imageUrl" :alt="imageAlt" />
+      </a>
+    </div>
   </div>
 </template>
 
@@ -32,6 +34,11 @@ export default defineComponent({
 .logo-container {
   display: inline-block;
   height: inherit;
+}
+
+.logo-container .logo-shrinker {
+  height: inherit;
+  transform: scale(0.8);
 }
 
 .logo-container a {
