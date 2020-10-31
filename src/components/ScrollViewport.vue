@@ -118,7 +118,7 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
   position: relative;
   width: 100%;
   transition: all 0.2s;
-  transform: scale(0.98);
+  transform: scale(0.99);
 }
 
 .scroll-viewport .content {

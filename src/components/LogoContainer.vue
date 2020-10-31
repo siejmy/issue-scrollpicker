@@ -34,6 +34,7 @@ export default defineComponent({
 .logo-container {
   display: inline-block;
   height: inherit;
+  margin-right: 3rem;
 }
 
 .logo-container .logo-shrinker {

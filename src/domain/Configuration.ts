@@ -1,7 +1,9 @@
 import { Issue, validateIssue } from './Issue'
 import { Logo, validateLogo } from './Logo'
+import { SeeMore, validateSeeMore } from './SeeMore'
 
 export interface Configuration {
+  seeMore?: SeeMore
   logo: Logo
   superTitle: string
   downloadButtonText: string
@@ -20,4 +22,7 @@ export function validateConfiguration(c: Configuration) {
     throw new TypeError('invalid issues')
   }
   c.issues.forEach(validateIssue)
+  if (c.seeMore) {
+    validateSeeMore(c.seeMore)
+  }
 }

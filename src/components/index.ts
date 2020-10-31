@@ -1,3 +1,5 @@
 export { default as LogoContainer } from './LogoContainer.vue'
 export { default as IssuesHorizontal } from './IssuesHorizontal.vue'
 export { default as ScrollViewport } from './ScrollViewport.vue'
+export { default as IssueCover } from './IssueCover.vue'
+export { default as SeeMoreBlock } from './SeeMoreBlock.vue'
