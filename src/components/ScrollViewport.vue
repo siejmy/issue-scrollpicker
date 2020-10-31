@@ -12,6 +12,8 @@
           :key="index"
           :issue="issue"
           :ref="'issueCoverElem_' + index"
+          :is-active="state.selectedIndex === index"
+          :class="{ active: state.selectedIndex === index }"
         />
         <SeeMoreBlock :see-more="seeMore" ref="seeMoreBlockElem" />
       </div>
@@ -80,7 +82,7 @@ export default defineComponent({
     watchEffect(
       () =>
         (state.comparePointAdjusted =
-          state.comparePoint + state.startPositionAdjust),
+          state.comparePoint - state.startPositionAdjust),
     )
 
     watchEffect(
@@ -118,9 +120,12 @@ export default defineComponent({
     watchEffect(() => {
       const distances = state.coverElems.map(coverElem => {
         const middle = (coverElem.startX + coverElem.endX) / 2
-        return Math.abs(state.comparePoint - middle)
+        return Math.abs(state.comparePointAdjusted - middle)
       })
       state.selectedIndex = indexOfSmallest(distances)
+    })
+
+    watchEffect(() => {
       console.log(state.selectedIndex)
     })
 
@@ -197,7 +202,7 @@ export default defineComponent({
     function tickUpdatePositions() {
       updateCoverElemsPositions()
       updateViewportWidth()
-      setTimeout(tickUpdatePositions, 10)
+      setTimeout(tickUpdatePositions, 5)
     }
 
     onMounted(() => {
@@ -303,7 +308,6 @@ function getCoverElemsRefs(refs: Ref<any>[]) {
 }
 
 .position-adjuster {
-  background: red;
   display: inline-block;
   vertical-align: top;
   height: inherit;

@@ -1,6 +1,6 @@
 <template>
   <div class="issue-cover">
-    <div class="cover-shrinker">
+    <div :class="{ 'cover-shrinker': true, 'cover-active': isActive }">
       <img :src="coverImageUrl" :alt="title" />
     </div>
   </div>
@@ -13,6 +13,7 @@ import { computed, defineComponent, PropType } from 'vue'
 export default defineComponent({
   props: {
     issue: Object as PropType<Issue>,
+    isActive: Boolean,
   },
   setup(props) {
     const title = computed(() => props.issue!.title)
@@ -37,6 +38,10 @@ export default defineComponent({
 .cover-shrinker {
   height: inherit;
   transform: scale(0.8);
+}
+
+.cover-shrinker.cover-active {
+  transform: scale(1);
 }
 
 .issue-cover img {

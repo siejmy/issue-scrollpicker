@@ -26,6 +26,6 @@ export default defineComponent({
 <style>
 #app {
   width: 100%;
-  height: 15rem;
+  height: 18rem;
 }
 </style>
