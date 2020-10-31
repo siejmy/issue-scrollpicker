@@ -4,7 +4,7 @@
       "path": ".."
     },
     {
-      "path": "src"
+      "path": "../src"
     },
   ],
   "settings": {
@@ -19,6 +19,7 @@
     "editor.formatOnPaste": false,
     "editor.formatOnType": false,
     "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.renderWhitespace": "all",
     "editor.fontLigatures": true,
     "editor.renderControlCharacters": true,
