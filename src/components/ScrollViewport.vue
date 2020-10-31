@@ -1,5 +1,6 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
+    <div ref="middleMarkElem" class="middle-mark-elem"></div>
     <div class="content" ref="contentElem" draggable="true">
       <LogoContainer :logo="logo" />
       <IssueCover
@@ -8,7 +9,10 @@
         :issue="issue"
         :ref="'issueCoverElem_' + index"
       />
-      <SeeMoreBlock :see-more="seeMore" />
+      <SeeMoreBlock :see-more="seeMore" ref="seeMoreBlockElem" />
+      <div class="scroll-to-end-enabler" ref="scrollToEndEnablerElem">
+        &nbsp;
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +34,7 @@ import LogoContainer from './LogoContainer.vue'
 import IssueCover from './IssueCover.vue'
 import SeeMoreBlock from './SeeMoreBlock.vue'
 import { Configuration } from '@/domain'
+import { indexOfSmallest } from '@/util'
 
 export default defineComponent({
   props: {
@@ -61,9 +66,13 @@ export default defineComponent({
 
     const contentElem = ref(null as any)
     const viewportElem = ref(null as any)
+    const scrollToEndEnablerElem = ref(null as any)
+    const seeMoreBlockElem = ref(null as any)
+    const middleMarkElem = ref(null as any)
     const state = reactive({
       x: 0,
       dragging: false,
+      selectedIndex: 0,
     })
 
     watchEffect(
@@ -78,16 +87,42 @@ export default defineComponent({
           : 'scale(0.98)'),
     )
 
+    watchEffect(() => {
+      if (!viewportElem.value) {
+        return
+      }
+      const viewPortWidth = viewportElem.value!.clientWidth
+      const comparePoint = state.x + viewPortWidth / 2
+      const distances = coverElems.map(coverElem => {
+        const middle = (coverElem.startX + coverElem.endX) / 2
+        return Math.abs(comparePoint - middle)
+      })
+      state.selectedIndex = indexOfSmallest(distances)
+      if (scrollToEndEnablerElem.value && seeMoreBlockElem.value) {
+        const scrollToEndEnablerWidth =
+          viewPortWidth / 2 - seeMoreBlockElem.value!.$el.clientWidth
+        scrollToEndEnablerElem.value!.style.width =
+          scrollToEndEnablerWidth + 'px'
+      }
+      if (middleMarkElem.value) {
+        middleMarkElem.value.style.left = comparePoint + 'px'
+      }
+      console.log(state.selectedIndex)
+    })
+
     function scroll(deltaX: number, deltaY: number) {
       const maxScrollLeft =
         viewportElem.value!.scrollWidth - viewportElem.value!.clientWidth
       const delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
-      state.x += delta
-      if (state.x < 0) {
-        state.x = 0
+      let posX = state.x + delta
+      if (posX < 0) {
+        posX = 0
       }
-      if (state.x > maxScrollLeft) {
-        state.x = maxScrollLeft
+      if (posX > maxScrollLeft) {
+        posX = maxScrollLeft
+      }
+      if (state.x != posX) {
+        state.x = posX
       }
     }
 
@@ -147,9 +182,12 @@ export default defineComponent({
       state,
       contentElem,
       viewportElem,
+      scrollToEndEnablerElem,
+      seeMoreBlockElem,
       logo,
       issues,
       seeMore,
+      middleMarkElem,
       ...coverElemsRefs,
     }
   },
@@ -192,5 +230,20 @@ interface CoverElem {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.scroll-to-end-enabler {
+  background: red;
+  display: inline-block;
+  vertical-align: top;
+  height: inherit;
+}
+.middle-mark-elem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: inherit;
+  width: 1px;
+  background: red;
 }
 </style>
