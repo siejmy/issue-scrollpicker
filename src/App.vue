@@ -1,9 +1,5 @@
 <template>
-  <ScrollViewport>
-    <LogoContainer :logo="logo" />
-    <IssueCover v-for="(issue, index) in issues" :key="index" :issue="issue" />
-    <SeeMoreBlock :see-more="seeMore" />
-  </ScrollViewport>
+  <ScrollViewport :config="config" />
 </template>
 
 <script lang="ts">
@@ -22,21 +18,7 @@ export default defineComponent({
     config: Object as PropType<Configuration>,
   },
   components: {
-    LogoContainer,
-    IssueCover,
     ScrollViewport,
-    SeeMoreBlock,
-  },
-  setup(props) {
-    const logo = computed(() => props.config!.logo)
-    const issues = computed(() => props.config!.issues)
-    const seeMore = computed(() => props.config!.seeMore)
-
-    return {
-      logo,
-      issues,
-      seeMore,
-    }
   },
 })
 </script>

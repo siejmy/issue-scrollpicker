@@ -1,24 +1,48 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
     <div class="content" ref="contentElem" draggable="true">
-      <slot />
+      <LogoContainer :logo="logo" />
+      <IssueCover
+        v-for="(issue, index) in issues"
+        :key="index"
+        :issue="issue"
+      />
+      <SeeMoreBlock :see-more="seeMore" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
+import Vue, {
   computed,
   defineComponent,
+  isVNode,
   onMounted,
   PropType,
   reactive,
   ref,
+  VNode,
   watchEffect,
 } from 'vue'
+import LogoContainer from './LogoContainer.vue'
+import IssueCover from './IssueCover.vue'
+import SeeMoreBlock from './SeeMoreBlock.vue'
+import { Configuration } from '@/domain'
 
 export default defineComponent({
-  setup() {
+  props: {
+    config: Object as PropType<Configuration>,
+  },
+  components: {
+    LogoContainer,
+    IssueCover,
+    SeeMoreBlock,
+  },
+  setup(props, { slots }) {
+    const logo = computed(() => props.config!.logo)
+    const issues = computed(() => props.config!.issues)
+    const seeMore = computed(() => props.config!.seeMore)
+
     const contentElem = ref(null as any)
     const viewportElem = ref(null as any)
     const state = reactive({
@@ -59,6 +83,13 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      setTimeout(() => {
+        const children = resolveChildrenWithLoops(
+          slots.default ? slots.default() : [],
+        )
+        console.log(children)
+      }, 5)
+
       if (!viewportElem.value) {
         throw new Error('Cannot ger viewport ref')
       }
@@ -93,6 +124,9 @@ export default defineComponent({
       state,
       contentElem,
       viewportElem,
+      logo,
+      issues,
+      seeMore,
     }
   },
 })
@@ -108,6 +142,28 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
     console.warn('Unknown mouse wheel delta mode: ' + deltaMode)
     return 16
   }
+}
+
+function resolveChildrenWithLoops(children: VNode[]): VNode[] {
+  const childrenResolved: VNode[] = []
+  children.forEach(child => {
+    if (
+      typeof child.type === 'symbol' &&
+      child.type.toString() === 'Symbol(Fragment)' &&
+      child.children &&
+      Array.isArray(child.children) &&
+      child.children.length
+    ) {
+      child.children.forEach(childsChild => {
+        if (isVNode(childsChild)) {
+          childrenResolved.push(childsChild)
+        }
+      })
+    } else {
+      childrenResolved.push(child)
+    }
+  })
+  return childrenResolved
 }
 </script>
 
