@@ -1,18 +1,21 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
-    <div ref="middleMarkElem" class="middle-mark-elem"></div>
     <div class="content" ref="contentElem" draggable="true">
-      <LogoContainer :logo="logo" />
-      <IssueCover
-        v-for="(issue, index) in issues"
-        :key="index"
-        :issue="issue"
-        :ref="'issueCoverElem_' + index"
-      />
-      <SeeMoreBlock :see-more="seeMore" ref="seeMoreBlockElem" />
-      <div class="scroll-to-end-enabler" ref="scrollToEndEnablerElem">
+      <div ref="middleMarkElem" class="middle-mark-elem"></div>
+      <div class="position-adjuster" ref="startPositionAdjusterElem">
         &nbsp;
       </div>
+      <div class="true-content" ref="trueContentElem">
+        <LogoContainer :logo="logo" />
+        <IssueCover
+          v-for="(issue, index) in issues"
+          :key="index"
+          :issue="issue"
+          :ref="'issueCoverElem_' + index"
+        />
+        <SeeMoreBlock :see-more="seeMore" ref="seeMoreBlockElem" />
+      </div>
+      <div class="position-adjuster" ref="endPositionAdjusterElem">&nbsp;</div>
     </div>
   </div>
 </template>
@@ -33,7 +36,7 @@ import Vue, {
 import LogoContainer from './LogoContainer.vue'
 import IssueCover from './IssueCover.vue'
 import SeeMoreBlock from './SeeMoreBlock.vue'
-import { Configuration } from '@/domain'
+import { Configuration, Issue } from '@/domain'
 import { indexOfSmallest } from '@/util'
 
 export default defineComponent({
@@ -49,34 +52,35 @@ export default defineComponent({
     const logo = computed(() => props.config!.logo)
     const issues = computed(() => props.config!.issues)
     const seeMore = computed(() => props.config!.seeMore)
-
-    const coverElems: CoverElem[] = issues.value.map((issue, i) => ({
-      ref: ref(null as any),
-      refName: 'issueCoverElem_' + i,
-      startX: 0,
-      endX: 0,
-    }))
-    const coverElemsRefs = coverElems.reduce(
-      (refsMap, elem) => ({
-        ...refsMap,
-        [elem.refName]: elem.ref,
-      }),
-      {} as Record<string, Ref<any>>,
-    )
-
     const contentElem = ref(null as any)
+    const coverElemsRefs = issues.value.map((_, index) => ref(null as any))
     const viewportElem = ref(null as any)
-    const scrollToEndEnablerElem = ref(null as any)
+    const startPositionAdjusterElem = ref(null as any)
+    const endPositionAdjusterElem = ref(null as any)
     const seeMoreBlockElem = ref(null as any)
     const middleMarkElem = ref(null as any)
+    const trueContentElem = ref(null as any)
     const state = reactive({
       x: 0,
       dragging: false,
       selectedIndex: 0,
+      viewPortWidth: 0,
+      startPositionAdjust: 0,
+      endPositionAdjust: 0,
+      comparePoint: 0,
+      comparePointAdjusted: 0,
+      coverElems: issues.value.map(() => ({ startX: 0, endX: 0 })),
     })
 
     watchEffect(
       () => viewportElem.value && (viewportElem.value!.scrollLeft = state.x),
+    )
+    watchEffect(() => (state.comparePoint = state.x + state.viewPortWidth / 2))
+
+    watchEffect(
+      () =>
+        (state.comparePointAdjusted =
+          state.comparePoint + state.startPositionAdjust),
     )
 
     watchEffect(
@@ -88,26 +92,56 @@ export default defineComponent({
     )
 
     watchEffect(() => {
-      if (!viewportElem.value) {
+      if (state.coverElems.length === 0) {
         return
       }
-      const viewPortWidth = viewportElem.value!.clientWidth
-      const comparePoint = state.x + viewPortWidth / 2
-      const distances = coverElems.map(coverElem => {
+      const firstCoverMiddlePoint =
+        (state.coverElems[0].startX + state.coverElems[0].endX) / 2
+      state.startPositionAdjust =
+        state.viewPortWidth / 2 - firstCoverMiddlePoint
+    })
+
+    watchEffect(() => {
+      if (!trueContentElem.value) {
+        return
+      }
+      if (state.coverElems.length === 0) {
+        return
+      }
+      const lastElem = state.coverElems[state.coverElems.length - 1]
+      const lastCoverMiddlePoint = (lastElem.startX + lastElem.endX) / 2
+      const trueContentWidth = trueContentElem.value.clientWidth
+      const lastElementToEndSpace = trueContentWidth - lastCoverMiddlePoint
+      state.endPositionAdjust = state.viewPortWidth / 2 - lastElementToEndSpace
+    })
+
+    watchEffect(() => {
+      const distances = state.coverElems.map(coverElem => {
         const middle = (coverElem.startX + coverElem.endX) / 2
-        return Math.abs(comparePoint - middle)
+        return Math.abs(state.comparePoint - middle)
       })
       state.selectedIndex = indexOfSmallest(distances)
-      if (scrollToEndEnablerElem.value && seeMoreBlockElem.value) {
-        const scrollToEndEnablerWidth =
-          viewPortWidth / 2 - seeMoreBlockElem.value!.$el.clientWidth
-        scrollToEndEnablerElem.value!.style.width =
-          scrollToEndEnablerWidth + 'px'
-      }
-      if (middleMarkElem.value) {
-        middleMarkElem.value.style.left = comparePoint + 'px'
-      }
       console.log(state.selectedIndex)
+    })
+
+    watchEffect(() => {
+      if (startPositionAdjusterElem.value) {
+        startPositionAdjusterElem.value!.style.width =
+          state.startPositionAdjust + 'px'
+      }
+    })
+
+    watchEffect(() => {
+      if (endPositionAdjusterElem.value) {
+        endPositionAdjusterElem.value!.style.width =
+          state.endPositionAdjust + 'px'
+      }
+    })
+
+    watchEffect(() => {
+      if (middleMarkElem.value) {
+        middleMarkElem.value.style.left = state.comparePoint + 'px'
+      }
     })
 
     function scroll(deltaX: number, deltaY: number) {
@@ -134,20 +168,40 @@ export default defineComponent({
     }
 
     function updateCoverElemsPositions() {
-      coverElems.forEach(coverElem => {
-        const startX = coverElem.ref.value?.$el.offsetLeft
-        const width = coverElem.ref.value?.$el.clientWidth
+      state.coverElems.forEach((coverElem, index) => {
+        const elem = coverElemsRefs[index].value?.$el
+        if (!elem) {
+          console.warn('Empty cover elem ref value')
+          return
+        }
+        const startX = elem.offsetLeft
+        const width = elem.clientWidth
         if (!startX || !width || width === 0) {
           return
         }
         coverElem.startX = startX
         coverElem.endX = startX + width
       })
-      setTimeout(updateCoverElemsPositions, 50)
+    }
+
+    function updateViewportWidth() {
+      if (!viewportElem.value) {
+        return
+      }
+      const viewPortWidth = viewportElem.value!.clientWidth
+      if (state.viewPortWidth != viewPortWidth) {
+        state.viewPortWidth = viewPortWidth
+      }
+    }
+
+    function tickUpdatePositions() {
+      updateCoverElemsPositions()
+      updateViewportWidth()
+      setTimeout(tickUpdatePositions, 10)
     }
 
     onMounted(() => {
-      updateCoverElemsPositions()
+      tickUpdatePositions()
       if (!viewportElem.value) {
         throw new Error('Cannot ger viewport ref')
       }
@@ -182,13 +236,15 @@ export default defineComponent({
       state,
       contentElem,
       viewportElem,
-      scrollToEndEnablerElem,
+      startPositionAdjusterElem,
+      endPositionAdjusterElem,
+      trueContentElem,
       seeMoreBlockElem,
       logo,
       issues,
       seeMore,
       middleMarkElem,
-      ...coverElemsRefs,
+      ...getCoverElemsRefs(coverElemsRefs),
     }
   },
 })
@@ -207,10 +263,18 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
 }
 
 interface CoverElem {
-  ref: Ref<any>
-  refName: string
   startX: number
   endX: number
+}
+
+function getCoverElemsRefs(refs: Ref<any>[]) {
+  return refs.reduce(
+    (refsMap, ref, index) => ({
+      ...refsMap,
+      ['issueCoverElem_' + index]: ref,
+    }),
+    {} as Record<string, Ref<any>>,
+  )
 }
 </script>
 
@@ -232,7 +296,13 @@ interface CoverElem {
   left: 0;
 }
 
-.scroll-to-end-enabler {
+.content .true-content {
+  display: inline-block;
+  height: inherit;
+  position: relative;
+}
+
+.position-adjuster {
   background: red;
   display: inline-block;
   vertical-align: top;
