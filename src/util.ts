@@ -5,3 +5,15 @@ export function indexOfSmallest(a: number[]) {
   }
   return lowest
 }
+
+export class Debouncer {
+  private timerHandle: any = null
+  constructor(private debounceFn: () => void) {}
+
+  trigger(debounceMs: number) {
+    if (this.timerHandle) {
+      clearTimeout(this.timerHandle)
+    }
+    this.timerHandle = setTimeout(this.debounceFn, debounceMs)
+  }
+}

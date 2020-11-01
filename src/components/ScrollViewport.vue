@@ -41,7 +41,7 @@ import LogoContainer from './LogoContainer.vue'
 import IssueCover from './IssueCover.vue'
 import SeeMoreBlock from './SeeMoreBlock.vue'
 import { Configuration, Issue } from '@/domain'
-import { indexOfSmallest } from '@/util'
+import { indexOfSmallest, Debouncer } from '@/util'
 
 export default defineComponent({
   props: {
@@ -64,7 +64,6 @@ export default defineComponent({
     const seeMoreBlockElem = ref(null as any)
     const middleMarkElem = ref(null as any)
     const trueContentElem = ref(null as any)
-    // let dragDebounceTimer: any = null
     const state = reactive({
       x: 0,
       actualX: 0,
@@ -82,6 +81,10 @@ export default defineComponent({
     function physicalScrollTo(x: number) {
       viewportElem.value && (viewportElem.value!.scrollLeft = x)
     }
+
+    const scrollDebouncer = new Debouncer(() => {
+      scrollToIndex(state.selectedIndex)
+    })
 
     watchEffect(() => (state.comparePoint = state.x + state.viewPortWidth / 2))
 
@@ -179,6 +182,7 @@ export default defineComponent({
       if (state.x != posX) {
         state.x = posX
       }
+      scrollDebouncer.trigger(300)
     }
 
     function handleMouseWheel(e: MouseWheelEvent) {
@@ -218,7 +222,7 @@ export default defineComponent({
 
     function scrollTick() {
       const diff = state.x - state.actualX
-      const actualX = state.actualX + (diff ^ 2) / 10
+      const actualX = state.actualX + (diff ^ 2) / 5
       if (Math.round(state.actualX) != Math.round(actualX)) {
         state.actualX = actualX
         physicalScrollTo(actualX)
@@ -229,7 +233,7 @@ export default defineComponent({
       updateCoverElemsPositions()
       updateViewportWidth()
       scrollTick()
-      setTimeout(tickUpdatePositions, 5)
+      setTimeout(tickUpdatePositions, 15)
     }
 
     onMounted(() => {
