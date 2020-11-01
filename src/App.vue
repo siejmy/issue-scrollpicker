@@ -1,15 +1,11 @@
 <template>
+  <SuperTitle :text="config.superTitle" />
   <ScrollViewport :config="config" />
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import {
-  LogoContainer,
-  IssueCover,
-  ScrollViewport,
-  SeeMoreBlock,
-} from '@/components'
+import { ScrollViewport, SuperTitle } from '@/components'
 import { Configuration } from './domain'
 
 export default defineComponent({
@@ -19,6 +15,7 @@ export default defineComponent({
   },
   components: {
     ScrollViewport,
+    SuperTitle,
   },
 })
 </script>

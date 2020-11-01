@@ -37,6 +37,7 @@ export default defineComponent({
 
 .cover-shrinker {
   height: inherit;
+  transition: all 0.15s;
   transform: scale(0.8);
 }
 

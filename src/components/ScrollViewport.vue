@@ -14,12 +14,14 @@
           :ref="'issueCoverElem_' + index"
           :is-active="state.selectedIndex === index"
           :class="{ active: state.selectedIndex === index }"
+          @click="issueClicked(index)"
         />
         <SeeMoreBlock :see-more="seeMore" ref="seeMoreBlockElem" />
       </div>
       <div class="position-adjuster" ref="endPositionAdjusterElem">&nbsp;</div>
     </div>
   </div>
+  <span>x: {{ state.x }}</span>
 </template>
 
 <script lang="ts">
@@ -62,8 +64,10 @@ export default defineComponent({
     const seeMoreBlockElem = ref(null as any)
     const middleMarkElem = ref(null as any)
     const trueContentElem = ref(null as any)
+    // let dragDebounceTimer: any = null
     const state = reactive({
       x: 0,
+      actualX: 0,
       dragging: false,
       selectedIndex: 0,
       viewPortWidth: 0,
@@ -71,13 +75,23 @@ export default defineComponent({
       endPositionAdjust: 0,
       comparePoint: 0,
       comparePointAdjusted: 0,
-      coverElems: issues.value.map(() => ({ startX: 0, endX: 0 })),
+      misalign: 0,
+      coverElems: issues.value.map(() => ({ startX: 0, endX: 0, middleX: 0 })),
     })
 
-    watchEffect(
-      () => viewportElem.value && (viewportElem.value!.scrollLeft = state.x),
-    )
+    function physicalScrollTo(x: number) {
+      viewportElem.value && (viewportElem.value!.scrollLeft = x)
+    }
+
     watchEffect(() => (state.comparePoint = state.x + state.viewPortWidth / 2))
+
+    watchEffect(
+      () =>
+        (state.misalign =
+          state.comparePointAdjusted -
+          state.coverElems[state.selectedIndex].middleX),
+    )
+    watchEffect(() => console.log('misalign=', state.misalign))
 
     watchEffect(
       () =>
@@ -97,8 +111,7 @@ export default defineComponent({
       if (state.coverElems.length === 0) {
         return
       }
-      const firstCoverMiddlePoint =
-        (state.coverElems[0].startX + state.coverElems[0].endX) / 2
+      const firstCoverMiddlePoint = state.coverElems[0].middleX
       state.startPositionAdjust =
         state.viewPortWidth / 2 - firstCoverMiddlePoint
     })
@@ -111,7 +124,7 @@ export default defineComponent({
         return
       }
       const lastElem = state.coverElems[state.coverElems.length - 1]
-      const lastCoverMiddlePoint = (lastElem.startX + lastElem.endX) / 2
+      const lastCoverMiddlePoint = lastElem.middleX
       const trueContentWidth = trueContentElem.value.clientWidth
       const lastElementToEndSpace = trueContentWidth - lastCoverMiddlePoint
       state.endPositionAdjust = state.viewPortWidth / 2 - lastElementToEndSpace
@@ -119,7 +132,7 @@ export default defineComponent({
 
     watchEffect(() => {
       const distances = state.coverElems.map(coverElem => {
-        const middle = (coverElem.startX + coverElem.endX) / 2
+        const middle = coverElem.middleX
         return Math.abs(state.comparePointAdjusted - middle)
       })
       state.selectedIndex = indexOfSmallest(distances)
@@ -127,6 +140,7 @@ export default defineComponent({
 
     watchEffect(() => {
       console.log(state.selectedIndex)
+      scrollToIndex(state.selectedIndex)
     })
 
     watchEffect(() => {
@@ -186,6 +200,7 @@ export default defineComponent({
         }
         coverElem.startX = startX
         coverElem.endX = startX + width
+        coverElem.middleX = startX + width / 2
       })
     }
 
@@ -199,9 +214,19 @@ export default defineComponent({
       }
     }
 
+    function scrollTick() {
+      const diff = state.x - state.actualX
+      const actualX = state.actualX + (diff ^ 2) / 10
+      if (Math.round(state.actualX) != Math.round(actualX)) {
+        state.actualX = actualX
+        physicalScrollTo(actualX)
+      }
+    }
+
     function tickUpdatePositions() {
       updateCoverElemsPositions()
       updateViewportWidth()
+      scrollTick()
       setTimeout(tickUpdatePositions, 5)
     }
 
@@ -237,6 +262,21 @@ export default defineComponent({
       }
     })
 
+    function scrollToIndex(index: number) {
+      const to = state.coverElems[index].middleX - state.coverElems[0].middleX
+      console.log({ to })
+      state.x = to
+
+      console.log('Clicked', index)
+    }
+
+    function issueClicked(index: number) {
+      if (index == state.selectedIndex) {
+        return
+      }
+      scrollToIndex(index)
+    }
+
     return {
       state,
       contentElem,
@@ -250,6 +290,7 @@ export default defineComponent({
       seeMore,
       middleMarkElem,
       ...getCoverElemsRefs(coverElemsRefs),
+      issueClicked,
     }
   },
 })
@@ -270,6 +311,7 @@ function getWheelMultiplierForDeltaMode(deltaMode: number) {
 interface CoverElem {
   startX: number
   endX: number
+  middleX: number
 }
 
 function getCoverElemsRefs(refs: Ref<any>[]) {
