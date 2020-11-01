@@ -39,7 +39,8 @@ export default defineComponent({
 
 .logo-container .logo-shrinker {
   height: inherit;
-  transform: scale(0.8);
+  transform: translateZ(0) scale(0.8);
+  backface-visibility: hidden;
 }
 
 .logo-container a {
@@ -50,5 +51,15 @@ export default defineComponent({
 .logo-container a img {
   max-height: 100%;
   max-width: 100%;
+  image-rendering: optimizeSpeed;             /*                     */
+  image-rendering: -moz-crisp-edges;          /* Firefox             */
+  image-rendering: -o-crisp-edges;            /* Opera               */
+  image-rendering: -webkit-optimize-contrast; /* Chrome (and Safari) */
+  image-rendering: optimize-contrast;         /* CSS3 Proposed       */
+  -ms-interpolation-mode: nearest-neighbor;   /* IE8+                */
+  backface-visibility: hidden;
+  -ms-transform: translateZ(0); /* IE 9 */
+  -webkit-transform: translateZ(0); /* Chrome, Safari, Opera */
+  transform: translateZ(0);
 }
 </style>

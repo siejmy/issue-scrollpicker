@@ -110,10 +110,6 @@ export default defineComponent({
   margin-bottom: 0.5rem;
 }
 
-.scrollpicker-scroller {
-  height: 15rem;
-}
-
 .scrollpicker-downloadbutton {
   margin-top: 0.5rem;
 }

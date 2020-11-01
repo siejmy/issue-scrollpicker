@@ -327,7 +327,8 @@ function getCoverElemsRefs(refs: Ref<any>[]) {
   width: 100%;
   height: inherit;
   transition: all 0.2s;
-  transform: scale(0.99);
+  transform: translateZ(0) scale(0.98);
+  backface-visibility: hidden;
 }
 
 .scroll-viewport .content {

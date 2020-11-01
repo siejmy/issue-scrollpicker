@@ -37,7 +37,8 @@ export default defineComponent({
 .see-more-block .shrinker {
   height: inherit;
   display: inline-block;
-  transform: scale(0.8);
+  transform: translateZ(0) scale(0.8);
+  backface-visibility: hidden;
   position: relative;
   vertical-align: middle;
 }
