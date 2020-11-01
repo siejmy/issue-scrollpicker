@@ -77,8 +77,10 @@ export default defineComponent({
   display: inline-block;
   width: 2rem;
   height: 2rem;
-  border: 0.25rem solid #333;
+  border: 0.25rem solid #999;
   border-radius: 50%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  background: white;
 }
 
 .arr-icon-left:after {
@@ -88,8 +90,8 @@ export default defineComponent({
   margin-left: 0.3rem;
   width: 0.7rem;
   height: 0.7rem;
-  border-top: 0.25rem solid #333;
-  border-right: 0.25rem solid #333;
+  border-top: 0.25rem solid #999;
+  border-right: 0.25rem solid #999;
   -moz-transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
   transform: rotate(-135deg);
@@ -102,8 +104,10 @@ export default defineComponent({
   display: inline-block;
   width: 2rem;
   height: 2rem;
-  border: 0.25rem solid #333;
+  border: 0.25rem solid #999;
   border-radius: 50%;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  background: white;
 }
 
 .arr-icon-right:after {
@@ -113,8 +117,8 @@ export default defineComponent({
   margin-left: -0.3rem;
   width: 0.7rem;
   height: 0.7rem;
-  border-top: 0.25rem solid #333;
-  border-right: 0.25rem solid #333;
+  border-top: 0.25rem solid #999;
+  border-right: 0.25rem solid #999;
   -moz-transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
