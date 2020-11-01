@@ -49,8 +49,7 @@ export default defineComponent({
 }
 
 .logo-container a img {
-  max-height: 100%;
-  max-width: 100%;
+  height: inherit;
   image-rendering: optimizeSpeed;             /*                     */
   image-rendering: -moz-crisp-edges;          /* Firefox             */
   image-rendering: -o-crisp-edges;            /* Opera               */
