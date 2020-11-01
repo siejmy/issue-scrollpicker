@@ -99,7 +99,7 @@ export default defineComponent({
 }
 
 .issue-cover img {
-  max-height: 100%;
-  max-width: 100%;
+  height: inherit;
+  box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.3);
 }
 </style>

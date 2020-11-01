@@ -1,6 +1,6 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
-    <div class="content" ref="contentElem" draggable="true">
+    <div class="scroll-content" ref="contentElem" draggable="true">
       <div class="position-adjuster" ref="startPositionAdjusterElem">
         &nbsp;
       </div>
@@ -323,23 +323,19 @@ function getCoverElemsRefs(refs: Ref<any>[]) {
 <style scoped>
 .scroll-viewport {
   overflow-x: hidden;
-  position: relative;
   width: 100%;
-  height: inherit;
+  height: fit-content;
   transition: all 0.2s;
   transform: translateZ(0) scale(0.98);
   backface-visibility: hidden;
+  padding-bottom: 1rem;
 }
 
-.scroll-viewport .content {
-  height: inherit;
+.scroll-viewport .scroll-content {
   width: max-content;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 
-.content .true-content {
+.scroll-content .true-content {
   display: inline-block;
   height: inherit;
   position: relative;
@@ -349,13 +345,5 @@ function getCoverElemsRefs(refs: Ref<any>[]) {
   display: inline-block;
   vertical-align: top;
   height: inherit;
-}
-.middle-mark-elem {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: inherit;
-  width: 1px;
-  background: red;
 }
 </style>

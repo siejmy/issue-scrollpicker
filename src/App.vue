@@ -113,7 +113,6 @@ export default defineComponent({
 }
 
 .scrollpicker-downloadbutton {
-  margin-top: 0.5rem;
 }
 
 .ab-next {
