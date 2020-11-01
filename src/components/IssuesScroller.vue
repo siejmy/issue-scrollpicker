@@ -65,6 +65,7 @@ export default defineComponent({
       x: 0,
       actualX: 0,
       dragging: false,
+      scrolling: false,
       selectedIndex: 0,
       viewPortWidth: 0,
       coverElems: issues.value.map(() => ({ startX: 0, endX: 0, middleX: 0 })),
@@ -76,6 +77,7 @@ export default defineComponent({
 
     const scrollDebouncer = new Debouncer(() => {
       scrollToIndex(state.selectedIndex)
+      state.scrolling = false
     })
 
     const comparePointAdjusted = computed(
@@ -95,6 +97,10 @@ export default defineComponent({
         (viewportElem.value!.style.transform = state.dragging
           ? 'scale(1)'
           : 'scale(0.98)'),
+    )
+
+    watchEffect(() =>
+      state.scrolling ? emit('scrollstart') : emit('scrollend'),
     )
 
     const endPositionAdjust = computed(() => {
@@ -152,7 +158,8 @@ export default defineComponent({
       if (state.x != posX) {
         state.x = posX
       }
-      scrollDebouncer.trigger(250)
+      scrollDebouncer.trigger(200)
+      state.scrolling = true
     }
 
     function handleMouseWheel(e: MouseWheelEvent) {
@@ -315,10 +322,10 @@ function getCoverElemsRefs(refs: Ref<any>[]) {
 
 <style scoped>
 .scroll-viewport {
-  height: inherit;
   overflow-x: hidden;
   position: relative;
   width: 100%;
+  height: inherit;
   transition: all 0.2s;
   transform: scale(0.99);
 }

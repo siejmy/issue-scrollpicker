@@ -13,7 +13,6 @@ export default defineComponent({})
 <style scoped>
 .layers-viewport {
   display: block;
-  height: inherit;
   width: 100%;
   position: relative;
 }

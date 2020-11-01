@@ -1,9 +1,11 @@
 <template>
-  <SuperTitle :text="config.superTitle" />
-  <LayersViewport>
+  <SuperTitle :text="config.superTitle" class="scrollpicker-supertitle" />
+  <LayersViewport class="scrollpicker-scroller">
     <IssuesScroller
       :config="config"
       @selected="state.selectedIndex = $event"
+      @scrollstart="state.isScrolling = true"
+      @scrollend="state.isScrolling = false"
       ref="issuesScrollerElemRef"
     />
     <EdgeFader />
@@ -20,6 +22,13 @@
       @arrowclick="selectNext()"
     />
   </LayersViewport>
+  <DownloadButton
+    :visible="!state.isScrolling"
+    :url="downloadUrl"
+    class="scrollpicker-downloadbutton"
+  >
+    {{ config.downloadButtonText }}
+  </DownloadButton>
 </template>
 
 <script lang="ts">
@@ -37,6 +46,7 @@ import {
   LayersViewport,
   EdgeFader,
   ArrowButton,
+  DownloadButton,
 } from '@/components'
 import { Configuration } from './domain'
 
@@ -51,11 +61,13 @@ export default defineComponent({
     SuperTitle,
     EdgeFader,
     ArrowButton,
+    DownloadButton,
   },
   setup(props) {
     const issuesScrollerElemRef = ref(null as any)
     const state = reactive({
       selectedIndex: 0,
+      isScrolling: false,
     })
     const showPrevButton = computed(() => state.selectedIndex > 0)
     const showNextButton = computed(
@@ -76,6 +88,10 @@ export default defineComponent({
       issuesScrollerElemRef.value.selectPrev()
     }
 
+    const downloadUrl = computed(
+      () => props.config!.issues[state.selectedIndex].downloadUrl,
+    )
+
     return {
       state,
       showPrevButton,
@@ -83,16 +99,23 @@ export default defineComponent({
       issuesScrollerElemRef,
       selectPrev,
       selectNext,
+      downloadUrl,
     }
   },
 })
 </script>
 
 <style>
-#app {
-  width: 90%;
-  height: 18rem;
-  margin: 0 auto;
+.scrollpicker-supertitle {
+  margin-bottom: 0.5rem;
+}
+
+.scrollpicker-scroller {
+  height: 15rem;
+}
+
+.scrollpicker-downloadbutton {
+  margin-top: 0.5rem;
 }
 
 .ab-next {
