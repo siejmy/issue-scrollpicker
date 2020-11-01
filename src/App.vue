@@ -108,11 +108,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.scrollpicker-root * {
+  box-sizing: content-box !important;
+  -moz-box-sizing: content-box !important;
+  -webkit-box-sizing: content-box !important;
+}
 .scrollpicker-supertitle {
   margin-bottom: 0.5rem;
-}
-
-.scrollpicker-downloadbutton {
 }
 
 .ab-next {
