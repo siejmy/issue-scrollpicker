@@ -91,7 +91,9 @@ export default defineComponent({
           state.comparePointAdjusted -
           state.coverElems[state.selectedIndex].middleX),
     )
-    watchEffect(() => console.log('misalign=', state.misalign))
+    watchEffect(() => {
+      console.log('misalign=', state.misalign)
+    })
 
     watchEffect(
       () =>

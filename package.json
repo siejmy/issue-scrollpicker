@@ -1,13 +1,18 @@
 {
   "name": "issue-scrollpicker",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.1.2",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build-lib": "rm -rf dist && vue-cli-service build --target lib --name issue-scrollpicker --inline-vue src/main.ts",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "prepublish": "npm run build-lib"
   },
+  "main": "dist/issue-scrollpicker.umd.min.js",
+  "files": [
+    "dist/issue-scrollpicker.umd.min.*"
+  ],
+  "unpkg": "dist/issue-scrollpicker.umd.min.js",
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^3.0.0"
@@ -27,5 +32,9 @@
     "eslint-plugin-vue": "^7.0.0-0",
     "prettier": "^1.19.1",
     "typescript": "~3.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/siejmy/issue-scrollpicker.git"
   }
 }
