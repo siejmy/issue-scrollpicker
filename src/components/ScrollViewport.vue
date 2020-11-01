@@ -1,7 +1,6 @@
 <template>
   <div class="scroll-viewport" ref="viewportElem">
     <div class="content" ref="contentElem" draggable="true">
-      <div ref="middleMarkElem" class="middle-mark-elem"></div>
       <div class="position-adjuster" ref="startPositionAdjusterElem">
         &nbsp;
       </div>
@@ -61,7 +60,6 @@ export default defineComponent({
     const startPositionAdjusterElem = ref(null as any)
     const endPositionAdjusterElem = ref(null as any)
     const seeMoreBlockElem = ref(null as any)
-    const middleMarkElem = ref(null as any)
     const trueContentElem = ref(null as any)
     const state = reactive({
       x: 0,
@@ -146,12 +144,6 @@ export default defineComponent({
       if (endPositionAdjusterElem.value) {
         endPositionAdjusterElem.value!.style.width =
           state.endPositionAdjust + 'px'
-      }
-    })
-
-    watchEffect(() => {
-      if (middleMarkElem.value) {
-        middleMarkElem.value.style.left = state.comparePoint + 'px'
       }
     })
 
@@ -278,7 +270,6 @@ export default defineComponent({
       logo,
       issues,
       seeMore,
-      middleMarkElem,
       ...getCoverElemsRefs(coverElemsRefs),
       issueClicked,
     }
