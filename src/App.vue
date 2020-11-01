@@ -1,34 +1,36 @@
 <template>
-  <SuperTitle :text="config.superTitle" class="scrollpicker-supertitle" />
-  <LayersViewport class="scrollpicker-scroller">
-    <IssuesScroller
-      :config="config"
-      @selected="state.selectedIndex = $event"
-      @scrollstart="state.isScrolling = true"
-      @scrollend="state.isScrolling = false"
-      ref="issuesScrollerElemRef"
-    />
-    <EdgeFader />
-    <ArrowButton
-      type="prev"
-      v-if="showPrevButton"
-      class="ab-prev"
-      @arrowclick="selectPrev()"
-    />
-    <ArrowButton
-      type="next"
-      v-if="showNextButton"
-      class="ab-next"
-      @arrowclick="selectNext()"
-    />
-  </LayersViewport>
-  <DownloadButton
-    :visible="!state.isScrolling"
-    :url="downloadUrl"
-    class="scrollpicker-downloadbutton"
-  >
-    {{ config.downloadButtonText }}
-  </DownloadButton>
+  <div class="scrollpicker-root">
+    <SuperTitle :text="config.superTitle" class="scrollpicker-supertitle" />
+    <LayersViewport class="scrollpicker-scroller">
+      <IssuesScroller
+        :config="config"
+        @selected="state.selectedIndex = $event"
+        @scrollstart="state.isScrolling = true"
+        @scrollend="state.isScrolling = false"
+        ref="issuesScrollerElemRef"
+      />
+      <EdgeFader />
+      <ArrowButton
+        type="prev"
+        v-if="showPrevButton"
+        class="ab-prev"
+        @arrowclick="selectPrev()"
+      />
+      <ArrowButton
+        type="next"
+        v-if="showNextButton"
+        class="ab-next"
+        @arrowclick="selectNext()"
+      />
+    </LayersViewport>
+    <DownloadButton
+      :visible="!state.isScrolling"
+      :url="downloadUrl"
+      class="scrollpicker-downloadbutton"
+    >
+      {{ config.downloadButtonText }}
+    </DownloadButton>
+  </div>
 </template>
 
 <script lang="ts">
@@ -105,7 +107,11 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
+.scrollpicker-root *, .scrollpicker-root *::after, .scrollpicker-root *::before {
+  box-sizing: content-box;
+}
+
 .scrollpicker-supertitle {
   margin-bottom: 0.5rem;
 }
