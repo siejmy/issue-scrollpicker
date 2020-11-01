@@ -50,7 +50,7 @@ export default defineComponent({
     IssueCover,
     SeeMoreBlock,
   },
-  setup(props, { slots }) {
+  setup(props, { slots, emit }) {
     const logo = computed(() => props.config!.logo)
     const issues = computed(() => props.config!.issues)
     const seeMore = computed(() => props.config!.seeMore)
@@ -121,6 +121,7 @@ export default defineComponent({
 
     watchEffect(() => {
       scrollToIndex(state.selectedIndex)
+      emit('selected', state.selectedIndex)
     })
 
     watchEffect(() => {
@@ -249,6 +250,20 @@ export default defineComponent({
       scrollToIndex(index)
     }
 
+    function selectNext() {
+      if (state.selectedIndex >= props.config!.issues.length - 1) {
+        return
+      }
+      scrollToIndex(state.selectedIndex + 1)
+    }
+
+    function selectPrev() {
+      if (state.selectedIndex === 0) {
+        return
+      }
+      scrollToIndex(state.selectedIndex - 1)
+    }
+
     return {
       state,
       contentElem,
@@ -262,6 +277,8 @@ export default defineComponent({
       seeMore,
       ...getCoverElemsRefs(coverElemsRefs),
       issueClicked,
+      selectNext,
+      selectPrev,
     }
   },
 })
