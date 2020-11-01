@@ -23,22 +23,20 @@
 </template>
 
 <script lang="ts">
-import Vue, {
+import {
   computed,
   defineComponent,
-  isVNode,
   onMounted,
   PropType,
   reactive,
   ref,
-  VNode,
   watchEffect,
   Ref,
 } from 'vue'
 import LogoContainer from './LogoContainer.vue'
 import IssueCover from './IssueCover.vue'
 import SeeMoreBlock from './SeeMoreBlock.vue'
-import { Configuration, Issue } from '@/domain'
+import { Configuration } from '@/domain'
 import { indexOfSmallest, Debouncer } from '@/util'
 
 export default defineComponent({
@@ -50,7 +48,7 @@ export default defineComponent({
     IssueCover,
     SeeMoreBlock,
   },
-  setup(props, { slots, emit }) {
+  setup(props, { emit }) {
     const logo = computed(() => props.config!.logo)
     const issues = computed(() => props.config!.issues)
     const seeMore = computed(() => props.config!.seeMore)
@@ -118,7 +116,7 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      const distances = state.coverElems.map(coverElem => {
+      const distances = state.coverElems.map((coverElem) => {
         const middle = coverElem.middleX
         return Math.abs(comparePointAdjusted.value - middle)
       })
@@ -162,7 +160,7 @@ export default defineComponent({
       state.scrolling = true
     }
 
-    function handleMouseWheel(e: MouseWheelEvent) {
+    function handleMouseWheel(e: WheelEvent) {
       const multiplier = getWheelMultiplierForDeltaMode(e.deltaMode)
       scroll(e.deltaX * multiplier, -e.deltaY * multiplier)
 

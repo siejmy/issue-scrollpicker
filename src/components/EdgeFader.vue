@@ -1,10 +1,6 @@
 <template>
-  <div class="edge-fader edge-fader-left">
-    &nbsp;
-  </div>
-  <div class="edge-fader edge-fader-right">
-    &nbsp;
-  </div>
+  <div class="edge-fader edge-fader-left">&nbsp;</div>
+  <div class="edge-fader edge-fader-right">&nbsp;</div>
 </template>
 
 <script lang="ts">

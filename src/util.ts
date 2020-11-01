@@ -10,7 +10,7 @@ export class Debouncer {
   private timerHandle: any = null
   constructor(private debounceFn: () => void) {}
 
-  trigger(debounceMs: number) {
+  trigger(debounceMs: number): void {
     if (this.timerHandle) {
       clearTimeout(this.timerHandle)
     }
