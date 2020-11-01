@@ -21,7 +21,6 @@
       <div class="position-adjuster" ref="endPositionAdjusterElem">&nbsp;</div>
     </div>
   </div>
-  <span>x: {{ state.x }}</span>
 </template>
 
 <script lang="ts">
@@ -74,7 +73,6 @@ export default defineComponent({
       endPositionAdjust: 0,
       comparePoint: 0,
       comparePointAdjusted: 0,
-      misalign: 0,
       coverElems: issues.value.map(() => ({ startX: 0, endX: 0, middleX: 0 })),
     })
 
@@ -87,16 +85,6 @@ export default defineComponent({
     })
 
     watchEffect(() => (state.comparePoint = state.x + state.viewPortWidth / 2))
-
-    watchEffect(
-      () =>
-        (state.misalign =
-          state.comparePointAdjusted -
-          state.coverElems[state.selectedIndex].middleX),
-    )
-    watchEffect(() => {
-      console.log('misalign=', state.misalign)
-    })
 
     watchEffect(
       () =>
@@ -144,7 +132,6 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      console.log(state.selectedIndex)
       scrollToIndex(state.selectedIndex)
     })
 
@@ -182,7 +169,7 @@ export default defineComponent({
       if (state.x != posX) {
         state.x = posX
       }
-      scrollDebouncer.trigger(300)
+      scrollDebouncer.trigger(250)
     }
 
     function handleMouseWheel(e: MouseWheelEvent) {
@@ -270,10 +257,7 @@ export default defineComponent({
 
     function scrollToIndex(index: number) {
       const to = state.coverElems[index].middleX - state.coverElems[0].middleX
-      console.log({ to })
       state.x = to
-
-      console.log('Clicked', index)
     }
 
     function issueClicked(index: number) {
@@ -303,14 +287,14 @@ export default defineComponent({
 
 function getWheelMultiplierForDeltaMode(deltaMode: number) {
   if (deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-    return 1
+    return 0.7
   } else if (deltaMode === WheelEvent.DOM_DELTA_LINE) {
-    return 16
+    return 10
   } else if (deltaMode === WheelEvent.DOM_DELTA_PAGE) {
     return 200
   } else {
     console.warn('Unknown mouse wheel delta mode: ' + deltaMode)
-    return 16
+    return 10
   }
 }
 
