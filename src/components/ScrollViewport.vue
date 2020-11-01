@@ -67,10 +67,6 @@ export default defineComponent({
       dragging: false,
       selectedIndex: 0,
       viewPortWidth: 0,
-      startPositionAdjust: 0,
-      endPositionAdjust: 0,
-      comparePoint: 0,
-      comparePointAdjusted: 0,
       coverElems: issues.value.map(() => ({ startX: 0, endX: 0, middleX: 0 })),
     })
 
@@ -82,13 +78,16 @@ export default defineComponent({
       scrollToIndex(state.selectedIndex)
     })
 
-    watchEffect(() => (state.comparePoint = state.x + state.viewPortWidth / 2))
-
-    watchEffect(
-      () =>
-        (state.comparePointAdjusted =
-          state.comparePoint - state.startPositionAdjust),
+    const comparePointAdjusted = computed(
+      () => state.x + state.viewPortWidth / 2 - startPositionAdjust.value,
     )
+    const startPositionAdjust = computed(() => {
+      if (state.coverElems.length === 0) {
+        return 0
+      }
+      const firstCoverMiddlePoint = state.coverElems[0].middleX
+      return state.viewPortWidth / 2 - firstCoverMiddlePoint
+    })
 
     watchEffect(
       () =>
@@ -98,33 +97,24 @@ export default defineComponent({
           : 'scale(0.98)'),
     )
 
-    watchEffect(() => {
-      if (state.coverElems.length === 0) {
-        return
-      }
-      const firstCoverMiddlePoint = state.coverElems[0].middleX
-      state.startPositionAdjust =
-        state.viewPortWidth / 2 - firstCoverMiddlePoint
-    })
-
-    watchEffect(() => {
+    const endPositionAdjust = computed(() => {
       if (!trueContentElem.value) {
-        return
+        return 0
       }
       if (state.coverElems.length === 0) {
-        return
+        return 0
       }
       const lastElem = state.coverElems[state.coverElems.length - 1]
       const lastCoverMiddlePoint = lastElem.middleX
       const trueContentWidth = trueContentElem.value.clientWidth
       const lastElementToEndSpace = trueContentWidth - lastCoverMiddlePoint
-      state.endPositionAdjust = state.viewPortWidth / 2 - lastElementToEndSpace
+      return state.viewPortWidth / 2 - lastElementToEndSpace
     })
 
     watchEffect(() => {
       const distances = state.coverElems.map(coverElem => {
         const middle = coverElem.middleX
-        return Math.abs(state.comparePointAdjusted - middle)
+        return Math.abs(comparePointAdjusted.value - middle)
       })
       state.selectedIndex = indexOfSmallest(distances)
     })
@@ -136,14 +126,14 @@ export default defineComponent({
     watchEffect(() => {
       if (startPositionAdjusterElem.value) {
         startPositionAdjusterElem.value!.style.width =
-          state.startPositionAdjust + 'px'
+          startPositionAdjust.value + 'px'
       }
     })
 
     watchEffect(() => {
       if (endPositionAdjusterElem.value) {
         endPositionAdjusterElem.value!.style.width =
-          state.endPositionAdjust + 'px'
+          endPositionAdjust.value + 'px'
       }
     })
 
@@ -278,14 +268,14 @@ export default defineComponent({
 
 function getWheelMultiplierForDeltaMode(deltaMode: number) {
   if (deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-    return 0.7
+    return 0.5
   } else if (deltaMode === WheelEvent.DOM_DELTA_LINE) {
-    return 10
+    return 8
   } else if (deltaMode === WheelEvent.DOM_DELTA_PAGE) {
     return 200
   } else {
     console.warn('Unknown mouse wheel delta mode: ' + deltaMode)
-    return 10
+    return 8
   }
 }
 
