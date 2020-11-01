@@ -1,11 +1,19 @@
 <template>
   <SuperTitle :text="config.superTitle" />
-  <ScrollViewport :config="config" />
+  <LayersViewport>
+    <IssuesScroller :config="config" />
+    <EdgeFader />
+  </LayersViewport>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { ScrollViewport, SuperTitle } from '@/components'
+import {
+  IssuesScroller,
+  SuperTitle,
+  LayersViewport,
+  EdgeFader,
+} from '@/components'
 import { Configuration } from './domain'
 
 export default defineComponent({
@@ -14,15 +22,18 @@ export default defineComponent({
     config: Object as PropType<Configuration>,
   },
   components: {
-    ScrollViewport,
+    IssuesScroller,
+    LayersViewport,
     SuperTitle,
+    EdgeFader,
   },
 })
 </script>
 
 <style>
 #app {
-  width: 100%;
+  width: 90%;
   height: 18rem;
+  margin: 0 auto;
 }
 </style>
