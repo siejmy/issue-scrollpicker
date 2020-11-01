@@ -110,6 +110,8 @@ export default defineComponent({
 <style scoped>
 .scrollpicker-root *, .scrollpicker-root *::after, .scrollpicker-root *::before {
   box-sizing: content-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
 
 .scrollpicker-supertitle {
