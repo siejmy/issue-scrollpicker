@@ -2,14 +2,15 @@
   <div
     :class="{
       'arrow-button': true,
+      'ab-contentbox': true,
       'arrow-button-prev': type === 'prev',
       'arrow-button-next': type === 'next',
     }"
   >
-    <div class="arr-icon-outercontainer">
-      <div class="arr-icon-innercontainer" @click="$emit('arrowclick')">
-        <span v-if="type === 'prev'" class="arr-icon-left"></span>
-        <span v-if="type === 'next'" class="arr-icon-right"></span>
+    <div class="arr-icon-outercontainer ab-contentbox">
+      <div class="arr-icon-innercontainer ab-contentbox" @click="$emit('arrowclick')">
+        <span v-if="type === 'prev'" class="arr-icon-left ab-contentbox"></span>
+        <span v-if="type === 'next'" class="arr-icon-right ab-contentbox"></span>
       </div>
     </div>
   </div>
@@ -26,6 +27,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.ab-contentbox {
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+}
 .arrow-button {
   display: flex;
   height: inherit;
@@ -87,6 +93,9 @@ export default defineComponent({
   -moz-transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
   transform: rotate(-135deg);
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
 }
 
 .arr-icon-right {
@@ -109,5 +118,8 @@ export default defineComponent({
   -moz-transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
 }
 </style>

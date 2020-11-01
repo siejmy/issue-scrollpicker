@@ -8,6 +8,12 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
 
     <style>
+      *, *:after, *:before {
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+      }
+
       #app {
         width: 90%;
         margin: 0 auto;
