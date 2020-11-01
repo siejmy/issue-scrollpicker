@@ -248,6 +248,8 @@ export default defineComponent({
     function scrollToIndex(index: number) {
       const to = state.coverElems[index].middleX - state.coverElems[0].middleX
       state.x = to
+      state.scrolling = true
+      scrollDebouncer.trigger(200)
     }
 
     function issueClicked(index: number) {
