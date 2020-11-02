@@ -66,6 +66,7 @@ export default defineComponent({
       scrolling: false,
       selectedIndex: 0,
       viewPortWidth: 0,
+      touchStartX: 0,
       coverElems: issues.value.map(() => ({ startX: 0, endX: 0, middleX: 0 })),
     })
 
@@ -241,6 +242,13 @@ export default defineComponent({
         if (!state.dragging) return
         scroll(-e.movementX, 0)
       }
+      viewportElem.value!.addEventListener('touchstart', (e: TouchEvent) => {
+        state.touchStartX = e.touches[0].pageX;
+      }, false)
+      viewportElem.value!.addEventListener('touchmove', (e: TouchEvent) => {
+        const deltaX =e .touches[0].pageX - state.touchStartX
+        scroll(deltaX, 0)
+      }, false)
     })
 
     function scrollToIndex(index: number) {
