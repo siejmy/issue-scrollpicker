@@ -247,7 +247,7 @@ export default defineComponent({
       }, false)
       viewportElem.value!.addEventListener('touchmove', (e: TouchEvent) => {
         const deltaX = state.touchStartX - e.touches[0].pageX
-        const touchMultiplier = 1/20
+        const touchMultiplier = 1/12
         scroll(deltaX * touchMultiplier, 0)
       }, false)
     })
