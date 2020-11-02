@@ -5,7 +5,7 @@
         &nbsp;
       </div>
       <div class="true-content" ref="trueContentElem">
-        <LogoContainer :logo="logo" />
+        <LogoContainer class="logo-container" :logo="logo" />
         <IssueCover
           v-for="(issue, index) in issues"
           :key="index"
@@ -176,12 +176,12 @@ export default defineComponent({
         }
         const startX = elem.offsetLeft
         const width = elem.clientWidth
-        if (!startX || !width || width === 0) {
+        if (typeof startX !== "number" || !width || width === 0) {
           return
         }
         coverElem.startX = startX
         coverElem.endX = startX + width
-        coverElem.middleX = startX + width / 2
+        coverElem.middleX = startX + (width / 2)
       })
     }
 
